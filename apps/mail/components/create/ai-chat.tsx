@@ -77,7 +77,13 @@ const RenderThreads = ({
   return <div className="flex flex-col gap-2">{threads.map(renderThread)}</div>;
 };
 
-const ExampleQueries = ({ onQueryClick }: { onQueryClick: (query: string) => void }) => {
+const ExampleQueries = ({
+  onQueryClick,
+  isFullScreen,
+}: {
+  onQueryClick: (query: string) => void;
+  isFullScreen?: boolean;
+}) => {
   const firstRowQueries = [
     'Find invoice from Stripe',
     'Show unpaid invoices',
@@ -86,40 +92,90 @@ const ExampleQueries = ({ onQueryClick }: { onQueryClick: (query: string) => voi
 
   const secondRowQueries = ['Find all work meetings', 'What projects do i have coming up'];
 
-  return (
-    <div className="mt-6 flex w-full flex-col items-center gap-2">
-      {/* First row */}
-      <div className="no-scrollbar relative flex w-full justify-center overflow-x-auto">
-        <div className="flex gap-4 px-4">
+  // If fullscreen, show static original queries only
+  if (isFullScreen) {
+    return (
+      <div className="mt-6 flex w-full flex-col items-center gap-2">
+        {/* First row - static */}
+        <div className="flex flex-wrap justify-center gap-2">
           {firstRowQueries.map((query, index) => (
             <button
               key={index}
               onClick={() => onQueryClick(query)}
-              className="flex-shrink-0 whitespace-nowrap rounded-md bg-[#f0f0f0] p-1 px-2 text-sm text-[#555555] dark:bg-[#262626] dark:text-[#929292]"
+              className="whitespace-nowrap rounded-md bg-[#f0f0f0] p-1 px-2 text-sm text-[#555555] transition-colors hover:bg-[#e0e0e0] dark:bg-[#262626] dark:text-[#929292] dark:hover:bg-[#333333]"
             >
               {query}
             </button>
           ))}
         </div>
+
+        {/* Second row - static */}
+        <div className="flex flex-wrap justify-center gap-2">
+          {secondRowQueries.map((query, index) => (
+            <button
+              key={index}
+              onClick={() => onQueryClick(query)}
+              className="whitespace-nowrap rounded-md bg-[#f0f0f0] p-1 px-2 text-sm text-[#555555] transition-colors hover:bg-[#e0e0e0] dark:bg-[#262626] dark:text-[#929292] dark:hover:bg-[#333333]"
+            >
+              {query}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // If not fullscreen, show animated marquee with duplicates
+  return (
+    <div className="mt-6 flex w-full flex-col items-center gap-2">
+      {/* First row - scrolling right to left */}
+      <div className="group relative flex w-full justify-center overflow-hidden [--duration:20s]">
+        {Array(4)
+          .fill(0)
+          .map((_, i) => (
+            <div
+              key={i}
+              className="animate-marquee flex shrink-0 flex-row justify-around gap-4 px-2 group-hover:[animation-play-state:paused]"
+            >
+              {firstRowQueries.map((query, index) => (
+                <button
+                  key={`${i}-${index}`}
+                  onClick={() => onQueryClick(query)}
+                  className="flex-shrink-0 whitespace-nowrap rounded-md bg-[#f0f0f0] p-1 px-2 text-sm text-[#555555] transition-colors hover:bg-[#e0e0e0] dark:bg-[#262626] dark:text-[#929292] dark:hover:bg-[#333333]"
+                >
+                  {query}
+                </button>
+              ))}
+            </div>
+          ))}
+
         {/* Left mask */}
         <div className="from-panelLight dark:from-panelDark pointer-events-none absolute bottom-0 left-0 top-0 w-12 bg-gradient-to-r to-transparent"></div>
         {/* Right mask */}
         <div className="from-panelLight dark:from-panelDark pointer-events-none absolute bottom-0 right-0 top-0 w-12 bg-gradient-to-l to-transparent"></div>
       </div>
 
-      {/* Second row */}
-      <div className="no-scrollbar relative flex w-full justify-center overflow-x-auto">
-        <div className="flex gap-4 px-4">
-          {secondRowQueries.map((query, index) => (
-            <button
-              key={index}
-              onClick={() => onQueryClick(query)}
-              className="flex-shrink-0 whitespace-nowrap rounded-md bg-[#f0f0f0] p-1 px-2 text-sm text-[#555555] dark:bg-[#262626] dark:text-[#929292]"
+      {/* Second row - scrolling left to right */}
+      <div className="group relative flex w-full justify-center overflow-hidden [--duration:15s]">
+        {Array(4)
+          .fill(0)
+          .map((_, i) => (
+            <div
+              key={i}
+              className="animate-marquee-reverse flex shrink-0 flex-row justify-around gap-4 px-2 group-hover:[animation-play-state:paused]"
             >
-              {query}
-            </button>
+              {secondRowQueries.map((query, index) => (
+                <button
+                  key={`${i}-${index}`}
+                  onClick={() => onQueryClick(query)}
+                  className="flex-shrink-0 whitespace-nowrap rounded-md bg-[#f0f0f0] p-1 px-2 text-sm text-[#555555] transition-colors hover:bg-[#e0e0e0] dark:bg-[#262626] dark:text-[#929292] dark:hover:bg-[#333333]"
+                >
+                  {query}
+                </button>
+              ))}
+            </div>
           ))}
-        </div>
+
         {/* Left mask */}
         <div className="from-panelLight dark:from-panelDark pointer-events-none absolute bottom-0 left-0 top-0 w-12 bg-gradient-to-r to-transparent"></div>
         {/* Right mask */}
@@ -332,6 +388,7 @@ export function AIChat({
                   setInput(query);
                   inputRef.current?.focus();
                 }}
+                isFullScreen={isFullScreen}
               />
             </div>
           ) : (
