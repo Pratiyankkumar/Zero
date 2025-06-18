@@ -362,28 +362,32 @@
   @apply scrollbar scrollbar-w-0 scrollbar-thumb-accent/40 scrollbar-track-transparent hover:scrollbar-thumb-accent scrollbar-thumb-rounded-full;
 }
 
-@keyframes marquee {
-  from {
-    transform: translateX(0%);
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes marquee {
+    from {
+      transform: translateX(0%);
+    }
+    to {
+      transform: translateX(-100%);
+    }
   }
-  to {
-    transform: translateX(-100%);
-  }
-}
 
-@keyframes marquee-reverse {
-  from {
-    transform: translateX(-100%);
+  @keyframes marquee-reverse {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0%);
+    }
   }
-  to {
-    transform: translateX(0%);
+
+  .animate-marquee {
+    will-change: transform;
+    animation: marquee var(--duration, 40s) linear infinite;
   }
-}
 
-.animate-marquee {
-  animation: marquee var(--duration, 40s) linear infinite;
-}
-
-.animate-marquee-reverse {
-  animation: marquee-reverse var(--duration, 40s) linear infinite;
+  .animate-marquee-reverse {
+    will-change: transform;
+    animation: marquee-reverse var(--duration, 40s) linear infinite;
+  }
 }
